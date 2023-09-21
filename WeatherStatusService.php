@@ -396,7 +396,7 @@ class WeatherStatusService {
 	 * @param array $params GET parameters
 	 * @return array which contains the error message or the parsed JSON result
 	 */
-	private function requestJSON(string $url, array $params = [], $reqQrySym): array {
+	private function requestJSON(string $url, array $params = [], $qrySym): array {
 		$cacheKey = $url . '|' . implode(',', $params) . '|' . implode(',', array_keys($params));
 		$cacheValue = $this->cache->get($cacheKey);
 		if ($cacheValue !== null) {
@@ -411,11 +411,10 @@ class WeatherStatusService {
 			];
 
 			$reqUrl = $url;
-			$reqQrySym = ($reqQrySym) ? '?' : '&';
 
 			if (count($params) > 0) {
 				$paramsContent = http_build_query($params);
-				$reqUrl = $url . $reqQrySym . $paramsContent;
+				$reqUrl = $url . (($qrySym) ? '?' : '&') . $paramsContent;
 			}
 
 			$response = $this->client->get($reqUrl, $options);
