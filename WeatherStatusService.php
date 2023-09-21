@@ -217,7 +217,7 @@ class WeatherStatusService {
 			'format' => 'json',
 		];
 		$url = $this->urlOsm . '/reverse?q=';
-		$result = $this->requestJSON($url, $params, 0);
+		$result = $this->requestJSON($url, $params);
 		return $this->formatOsmAddress($result);
 	}
 
@@ -233,7 +233,7 @@ class WeatherStatusService {
 			'locations' => $lat . ',' . $lon,
 		];
 		$url = 'https://api.opentopodata.org/v1/srtm30m';
-		$result = $this->requestJSON($url, $params, 1);
+		$result = $this->requestJSON($url, $params);
 		$altitude = 0;
 		if (isset($result['results']) && is_array($result['results']) && count($result['results']) > 0
 			&& is_array($result['results'][0]) && isset($result['results'][0]['elevation'])) {
@@ -381,7 +381,7 @@ class WeatherStatusService {
 			'altitude' => $altitude,
 		];
 		$url = 'https://api.met.no/weatherapi/locationforecast/2.0/compact';
-		$weather = $this->requestJSON($url, $params, 1);
+		$weather = $this->requestJSON($url, $params);
 		if (isset($weather['properties']) && isset($weather['properties']['timeseries']) && is_array($weather['properties']['timeseries'])) {
 			return array_slice($weather['properties']['timeseries'], 0, $nbValues);
 		}
@@ -396,7 +396,7 @@ class WeatherStatusService {
 	 * @param array $params GET parameters
 	 * @return array which contains the error message or the parsed JSON result
 	 */
-	private function requestJSON(string $url, array $params = [], boolean $qrySym): array {
+	private function requestJSON(string $url, array $params = [], int $qrySym = 1): array {
 		$cacheKey = $url . '|' . implode(',', $params) . '|' . implode(',', array_keys($params));
 		$cacheValue = $this->cache->get($cacheKey);
 		if ($cacheValue !== null) {
@@ -448,4 +448,3 @@ class WeatherStatusService {
 		}
 	}
 }
-
